@@ -43,7 +43,8 @@ python src/render_readme.py
 #git pull
 
 # commit and push
-git remote add github git@github.com:tungduync/vietlott-data.git
+# git remote add github git@github.com:tungduync/vietlott-data.git
+git remote add github https://x-access-token:${GITHUB_TOKEN}@github.com/tungduync/vietlott-data.git
 git config user.name "\'$USER\'"
 git config user.email "\'$EMAIl\'"
 git status

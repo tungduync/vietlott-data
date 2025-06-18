@@ -23,27 +23,21 @@ class ReadmeTemplates:
     @staticmethod
     def get_header() -> str:
         """Get the main header with badges and description."""
-        return """# 🎰 Vietlott Data
+        return """# 🎰 Vietlott Data Collection & Analysis
 
-[![GitHub Actions](https://github.com/vietvudanh/vietlott-data/workflows/crawl/badge.svg)](https://github.com/vietvudanh/vietlott-data/actions)
-[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Data Updated](https://img.shields.io/badge/data-daily%20updated-brightgreen.svg)](https://github.com/vietvudanh/vietlott-data/commits/main)
+> 📊 **Automated data collection and analysis for Vietnam's official lottery games**
 
-> 📊 **Automated Vietnamese Lottery Data Collection & Analysis**
-> 
-> This project automatically crawls and analyzes Vietnamese lottery data from [vietlott.vn](https://vietlott.vn/), providing comprehensive statistics and insights for all major lottery products.
+This project automatically collects and analyzes data from [Vietlott](https://vietlott.vn) - Vietnam's official lottery operator. It provides comprehensive statistics, frequency analysis, and experimental prediction models for educational purposes.
 
 ## 🎯 Supported Lottery Products
 
-| Product | Link | Description |
+| Product | Official Results | Description |
 |---------|------|-------------|
 | **Power 6/55** | [🔗 Results](https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/655) | Choose 6 numbers from 1-55 |
 | **Power 6/45** | [🔗 Results](https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/645) | Choose 6 numbers from 1-45 |
 | **Keno** | [🔗 Results](https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/winning-number-keno) | Fast-pace number game |
 | **Max 3D** | [🔗 Results](https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/max-3d) | 3-digit lottery game |
 | **Max 3D Pro** | [🔗 Results](https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/max-3dpro) | Enhanced 3D lottery |
-| **Bingo18** | [🔗 Results](https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/winning-number-bingo18) | 3 numbers from 0-9 game |
 """
 
     @staticmethod
@@ -192,8 +186,19 @@ class ReadmeGenerator:
 
     def _load_lottery_data(self, product: str) -> pd.DataFrame:
         """Load and prepare lottery data for analysis."""
+        # Skip bingo18 as it's currently excluded
+        if product == "bingo18":
+            logger.info("Skipping bingo18 data loading as it's currently excluded")
+            return pd.DataFrame()
+            
         try:
-            df = pd.read_json(get_config(product).raw_path, lines=True, dtype=object, convert_dates=False)
+            # Read file directly to avoid FutureWarning
+            config = get_config(product)
+            if not config.raw_path.exists():
+                logger.warning(f"Data file not found for {product}: {config.raw_path}")
+                return pd.DataFrame()
+                
+            df = pd.read_json(config.raw_path, lines=True, dtype=object, convert_dates=False)
             df["date"] = pd.to_datetime(df["date"]).dt.date
             df = df.sort_values(by=["date", "id"], ascending=False)
             return df
@@ -213,7 +218,7 @@ class ReadmeGenerator:
 
     def _get_data_overview(self) -> str:
         """Generate overview statistics for all products."""
-        products = ["power_655", "power_645", "keno", "3d", "3d_pro", "bingo18"]
+        products = ["power_655", "power_645", "keno", "3d", "3d_pro"]  # Exclude bingo18
         data_stats = []
 
         for product in products:

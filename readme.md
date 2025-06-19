@@ -50,7 +50,10 @@ This project automatically collects and analyzes data from [Vietlott](https://vi
 - **Daily cost**: 200,000 VND
 - **Results with 5+ matches**:
 
-No significant matches found in backtest period.
+| date       | result                      | predicted                |
+|:-----------|:----------------------------|:-------------------------|
+| 2025-03-08 | [10, 38, 41, 43, 45, 48, 8] | [43, 45, 18, 10, 41, 38] |
+| 2018-04-19 | [4, 17, 19, 35, 49, 55, 9]  | [35, 26, 17, 49, 19, 9]  |
 
 
 
